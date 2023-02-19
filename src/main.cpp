@@ -11,21 +11,32 @@ void write_color(std::ofstream &fout, color pixel_color) {
          << static_cast<int>(255.999 * pixel_color.z()) << ' ';                                                         
 }
 
-bool hit_sphere(const point3& center, double radius, const ray& r ){
+double hit_sphere(const point3& center, double radius, const ray& r ){
     // (O+tD-C)(O+tD-C) = r^2 =>
     // (D·D)t^2 + 2D(O-C)t + (O-C)(O-C)-r^2 = 0
+    // return first hit time if hit, -1 for not hit
     auto A = r.direction().length_squared();
     auto B = 2 * dot(r.direction(), r.origin()-center);
     auto C = (r.origin()-center).length_squared() - radius*radius;
-    return B*B - 4*A*C > 0;
+    auto discriminant = B*B - 4*A*C;
+    if(discriminant < 0){
+        return -1.0;
+    }
+    else{
+        return (-B-std::sqrt(discriminant))/(2.0*A);
+    }
 }
 
-//- 背景，方向从下到上 由白到蓝
 color ray_color(const ray& r){
-    if(hit_sphere(point3(0,0,-1), 0.5, r))
-        return color(1, 0, 0);
+    auto t = hit_sphere(point3(0,0,-1), 0.5, r);
+    if(t>0.0){
+        auto hitPoint = r.at(t);
+        auto N = unit_vector(hitPoint - vec3(0,0,-1)); // vec3(0,0,-1) centre of sphere. 
+        return 0.5 * color(N.x()+1, N.y()+1, N.z()+1); // [-1,1]->[0,1]
+    }
+    // else -> still background.
     vec3 unit_direction = unit_vector(r.direction());
-    auto t = 0.5*(unit_direction.y() + 1.0);
+    t = 0.5*(unit_direction.y() + 1.0);
     return (1.0-t) * color(1.0,1.0,1.0) + t*color(0.5,0.7,1.0);
 }
 
