@@ -1,2 +1,2 @@
 # RayTracing
-ray tracing implement https://github.com/RayTracing/raytracing.github.io
+ray tracing implement https://github.com/RayTracing/raytracing.github.io .
