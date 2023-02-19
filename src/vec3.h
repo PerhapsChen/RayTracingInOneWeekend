@@ -12,7 +12,7 @@ public:
     double y() {return e[1];}
     double z() {return e[2];}
 
-    vec3 operator-() const {return vec3{-e[0],-e[1],e[2]};}
+    vec3 operator-() const {return vec3{-e[0],-e[1],-e[2]};}
     double operator[](int i) const {return e[i];}
     double& operator[](int i) {return e[i];}
     
@@ -59,7 +59,7 @@ inline vec3 operator-(const vec3&u, const vec3& v){
 }
 
 inline vec3 operator*(const vec3&u, const vec3& v){ // element multiply
-    return vec3(u.e[0]-v.e[0], u.e[1]-v.e[1], u.e[2]-v.e[2]);
+    return vec3(u.e[0]*v.e[0], u.e[1]*v.e[1], u.e[2]*v.e[2]);
 }
 
 inline vec3 operator*(double t, const vec3& v){
