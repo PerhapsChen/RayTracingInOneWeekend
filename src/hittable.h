@@ -11,7 +11,7 @@ struct hit_record{
 
     inline void set_face_normal(const ray&r, const vec3& outward_normal)
     {
-        normal=dot(r.direction(), outward_normal)>0?outward_normal:-outward_normal;
+        normal=dot(r.direction(), outward_normal)<0?outward_normal:-outward_normal;
     }
 
 };
