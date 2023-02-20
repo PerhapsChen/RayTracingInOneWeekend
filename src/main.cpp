@@ -2,12 +2,14 @@
 #include <thread>
 #include <vector>
 #include <map>
+
 #include "rtweekend.h"
 #include "color.h"
 #include "hittable_list.h"
 #include "sphere.h"
 #include "camera.h"
 #include "material.h"
+#include "moving_sphere.h"
 
 hittable_list random_scene() {
     hittable_list world;
@@ -27,7 +29,8 @@ hittable_list random_scene() {
                     // diffuse
                     auto albedo = color::random() * color::random();
                     sphere_material = make_shared<lambertian>(albedo);
-                    world.add(make_shared<sphere>(center, 0.2, sphere_material));
+                    auto center2 = center + vec3(0, random_double(0,.5),0); // vertical moving
+                    world.add(make_shared<moving_sphere>(center, center2, 0.0, 1.0, 0.2, sphere_material));
                 } else if (choose_mat < 0.95) {
                     // metal
                     auto albedo = color::random(0.5, 1);
@@ -87,9 +90,10 @@ void write_many_rows(int tIdx,
                      int samples_per_pixel,
                      camera& cam)
 {
-    int inc = image_height / NofT;   
+    int inc = image_height / NofT + 1;   
     int r_begin = image_height - 1- inc*tIdx; 
     int r_end = image_height - inc*(tIdx+1);
+    r_end = r_end>0?r_end:0;
     for(int j = r_begin; j >= r_end; --j){
         // std::cerr << "\rScanlines remaining: " << j << ' ' << std::flush;
         for(int i = 0; i < image_width; ++i){
@@ -110,9 +114,9 @@ void write_many_rows(int tIdx,
 int main() {
 
     const auto aspect_ratio = 3.0 / 2.0;
-    const int image_width = 1200;
+    const int image_width = 300;
     const int image_height = static_cast<int> (image_width/aspect_ratio);
-    const int samples_per_pixel = 500;
+    const int samples_per_pixel = 50 ;
     const int max_depth = 50;
 
     //World
@@ -127,11 +131,11 @@ int main() {
     auto dist_to_focus = 10.0;
     auto aperture = 0.1;
 
-    camera cam(lookfrom, lookat, vup, 20, aspect_ratio, aperture, dist_to_focus);
+    camera cam(lookfrom, lookat, vup, 20, aspect_ratio, aperture, dist_to_focus, 0.0, 1.0);
 
     std::map<int, std::vector<int>> result {}; //- store multi thread result 
     std::vector<std::thread> thread_vec {};
-    int NofT = 80;
+    int NofT = 10;
 
     for(int t = 0; t < NofT; t++)
     {
