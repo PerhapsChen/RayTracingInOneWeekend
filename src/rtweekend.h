@@ -8,7 +8,7 @@
 using std::shared_ptr;
 using std::make_shared;
 using std::sqrt;
-unsigned int seed = 4396;
+unsigned int seed = 2302020;
 
 // Constants
 constexpr double infinity = std::numeric_limits<double>::infinity();
