@@ -112,7 +112,7 @@ int main() {
     const auto aspect_ratio = 3.0 / 2.0;
     const int image_width = 1200;
     const int image_height = static_cast<int> (image_width/aspect_ratio);
-    const int samples_per_pixel = 500;
+    const int samples_per_pixel = 50;
     const int max_depth = 50;
 
     //World
@@ -131,11 +131,14 @@ int main() {
 
     std::map<int, std::vector<int>> result {}; //- store multi thread result 
     std::vector<std::thread> thread_vec {};
-    int NofT = 2;
+    int NofT = 40;
 
     for(int t = 0; t < NofT; t++)
     {
-        result[t] = {};
+        result[t].reserve(static_cast<int>(image_width*image_width/aspect_ratio*3));
+    }
+    for(int t = 0; t < NofT; t++)
+    {
         thread_vec.push_back(std::thread(write_many_rows,
             t,NofT,image_width,image_height,std::ref(result[t]),std::ref(world),max_depth,samples_per_pixel,std::ref(cam)));
     }
