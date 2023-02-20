@@ -1,4 +1,4 @@
 # RayTracing
-ray tracing implement https://github.com/RayTracing/raytracing.github.io .
+ray tracing part2 https://github.com/RayTracing/raytracing.github.io .
 
-Multi thread implement
+implement base c++ build-in multi processing 
