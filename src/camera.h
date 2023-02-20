@@ -5,15 +5,16 @@
 class camera
 {
 public:
-    camera(){
-        //Camera
-    // Image
-        const double aspect_ratio = 16.0/9.0;
-        double viewport_height = 2.0;
-        double viewport_width = aspect_ratio * viewport_height;
+    camera(double vfov, double aspect_ratio){
+        auto theta = degrees_to_radians(vfov);
+        auto h = tan(theta/2);
+        auto viewport_height = 2.0 * h;
+        auto viewport_width = aspect_ratio * viewport_height;   
+
         double focal_lenght = 1.0; //焦距
 
         origin = point3(0.0,0.0,0.0);
+
         horizontal = vec3(viewport_width, 0, 0);
         vertical = vec3(0, viewport_height, 0);
         lower_left_corner = 
