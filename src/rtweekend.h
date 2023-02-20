@@ -8,6 +8,7 @@
 using std::shared_ptr;
 using std::make_shared;
 using std::sqrt;
+unsigned int seed = 2302020;
 
 // Constants
 constexpr double infinity = std::numeric_limits<double>::infinity();
@@ -19,7 +20,7 @@ inline double degrees_to_radians(double degrees){
 }
 
 inline double random_double(){
-    return rand() / (RAND_MAX + 1.0);
+    return rand_r(&seed) / (RAND_MAX + 1.0);
 }
 inline double random_double(double min, double max){
     return min + (max-min)*random_double();

@@ -1,4 +1,7 @@
 #include <iostream>
+#include <thread>
+#include <vector>
+#include <map>
 #include "rtweekend.h"
 #include "color.h"
 #include "hittable_list.h"
@@ -74,6 +77,36 @@ color ray_color(const ray& r, const hittable& world, int depth){
 }
 
 
+void write_many_rows(int tIdx, 
+                     int NofT, 
+                     int image_width, 
+                     int image_height, 
+                     std::vector<int>& result, 
+                     hittable_list& world,
+                     int max_depth, 
+                     int samples_per_pixel,
+                     camera& cam)
+{
+    int inc = image_height / NofT;   
+    int r_begin = image_height - 1- inc*tIdx; 
+    int r_end = image_height - inc*(tIdx+1);
+    for(int j = r_begin; j >= r_end; --j){
+        // std::cerr << "\rScanlines remaining: " << j << ' ' << std::flush;
+        for(int i = 0; i < image_width; ++i){
+            color pixel_color(0,0,0);
+            for(int s = 0; s < samples_per_pixel; ++s){
+                auto u = (i+random_double())/(image_width-1);
+                auto v = (j+random_double())/(image_height-1);
+                ray r = cam.get_ray(u, v);
+                pixel_color += ray_color(r,world, max_depth);
+            }    
+            write_color_mt(pixel_color , samples_per_pixel, result);        
+        }
+    }
+    std::cerr << "Thread " << tIdx << " done.\n";
+}
+
+
 int main() {
 
     const auto aspect_ratio = 3.0 / 2.0;
@@ -96,25 +129,34 @@ int main() {
 
     camera cam(lookfrom, lookat, vup, 20, aspect_ratio, aperture, dist_to_focus);
 
+    std::map<int, std::vector<int>> result {}; //- store multi thread result 
+    std::vector<std::thread> thread_vec {};
+    int NofT = 80;
 
-    // Render
-    const std::string outputFile {"C:/Users/45162.CPHXR9000K/Desktop/RayTracing/output/FinalOFClass1.ppm"};
+    for(int t = 0; t < NofT; t++)
+    {
+        result[t].reserve(static_cast<int>(image_width*image_width/aspect_ratio*3));
+    }
+    for(int t = 0; t < NofT; t++)
+    {
+        thread_vec.push_back(std::thread(write_many_rows,
+            t,NofT,image_width,image_height,std::ref(result[t]),std::ref(world),max_depth,samples_per_pixel,std::ref(cam)));
+    }
+    for(int t = 0; t < NofT; t++){
+        thread_vec[t].join();
+    }
+
+    const std::string outputFile {"/home/chen-p/perhaps/RayTracing/output/Class1Final.ppm"};
     std::ofstream fout(outputFile);
     fout << "P3\n" << image_width << " " << image_height <<"\n255\n";
     
-    for (int j = image_height-1; j >= 0; --j) {
-        std::cerr << "\rScanlines remaining: " << j << ' ' << std::flush;
-        for (int i = 0; i < image_width; ++i) {
-            color pixel_color(0,0,0);
-            for(int s = 0; s < samples_per_pixel; ++s){
-                auto u = (i+random_double())/(image_width-1);
-                auto v = (j+random_double())/(image_height-1);
-                ray r = cam.get_ray(u, v);
-                pixel_color += ray_color(r,world, max_depth);
-            }
-            write_color(fout, pixel_color , samples_per_pixel);
+    for(int t = 0; t < NofT; t++){
+        auto& vec = result[t];
+        for(auto it = vec.begin(); it!=vec.end(); it++){
+            fout << *it << " ";
         }
     }
+
     fout.close();
 
     std::cerr << "\nDone.\n";
