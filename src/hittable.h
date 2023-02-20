@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rtweekend.h"
+#include "aabb.h"
 
 class material; //前向声明，只能用指针
 
@@ -22,6 +23,8 @@ struct hit_record{
 
 class hittable{  // base class
 public:
-    virtual bool hit(const ray& r, double t_min, double t_max,
-                     hit_record& rec) const = 0; // 纯虚函数
+    virtual bool hit(const ray& r, double t_min, double t_max, hit_record& rec) const = 0; 
+    virtual bool bounding_box(double time0, double time1, aabb& output_box) const = 0;
+                
+            
 };
