@@ -28,6 +28,7 @@ public:
             if (t_max <= t_min)
                 return false;
         }
+        return true;
     }
 
 public:
