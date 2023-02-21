@@ -10,7 +10,7 @@ public:
     virtual color value(double u, double v, const point3& p) const = 0; // sample
 };
 
-class solid_color: public texture
+class solid_color: public texture // single color.
 {
 public:
     solid_color() {}
