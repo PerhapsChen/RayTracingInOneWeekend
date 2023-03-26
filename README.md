@@ -1,4 +1,9 @@
 # RayTracing
-ray tracing implement https://github.com/RayTracing/raytracing.github.io .
+也成为历史了，过去的爱好
 
-Multi thread implement
+ray tracing implement with std::thread.
+
+[**RayTracingInOneWeekend**](https://github.com/PerhapsChen/RayTracing/tree/main)
+
+[**RayTracingInNextWeek**](https://github.com/PerhapsChen/RayTracing/tree/next_week)
+
